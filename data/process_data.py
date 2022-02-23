@@ -48,7 +48,11 @@ def clean_data(df):
     
     # Replace values of column 'related' that are 2 with 1
     split_categories['related'] = np.where(split_categories['related']!=0,1,0)
-
+    
+    # Remove all classes where only one label exists in the dataset since no information
+    # can be inferred about this class and it causes some algorithms to break
+    split_categories = split_categories.loc[:,split_categories.describe().loc['max']!=0]
+    
     preprocessed_dataset = df.drop('categories', axis=1)
     
     preprocessed_dataset = pd.concat([preprocessed_dataset, split_categories], axis=1)
