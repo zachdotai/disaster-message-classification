@@ -89,7 +89,7 @@ def build_model():
     pipeline = Pipeline([
         ('vect', CountVectorizer(tokenizer=tokenize, ngram_range=(1,1))),
         ('tfidf', TfidfTransformer()),
-        ('clf', MultiOutputClassifier(SGDClassifier(loss='modified_huber', alpha=0.0001)))
+        ('clf', MultiOutputClassifier(SGDClassifier(loss='hinge', alpha=0.0001)))
     ])
     
     return pipeline
