@@ -30,6 +30,16 @@ from sqlalchemy import create_engine
 import pickle
 
 def load_data(database_filepath):
+    '''
+    Loads the data from the locally saved database file
+    Args:
+        database_filepath (str) - Path to database file
+    Returns:
+        X (pd.Series) - The preprocessed dataset for the features
+        Y (pd.DataFrame) - The preprocessed dataset for the target variables
+        category_names (pd.Index) - The labels for messages to be categorized into
+    '''
+    
     engine = create_engine('sqlite:///'+database_filepath)
     preprocessed_dataset = pd.read_sql_table('labelled_messages', engine)
     
@@ -41,6 +51,16 @@ def load_data(database_filepath):
     return X, Y, category_names
     
 def tokenize(text):
+    '''
+    Tokenize text by removing stopwords, reducing words to their stems, and lemmatizing words to their root form
+    Args:
+        text(str) - Text to be tokenized ahead of mode training/prediction
+    Returns:
+        X (pd.Series) - The preprocessed dataset for the features
+        Y (pd.DataFrame) - The preprocessed dataset for the target variables
+        category_names (pd.Index) - The labels for messages to be categorized into
+    '''
+    
     tokens = re.sub(r"[^a-zA-Z0-9]", " ", text.lower())
     
     tokens = text.split()
@@ -57,6 +77,15 @@ def tokenize(text):
 
 
 def build_model():
+    '''
+    Build pipeline for predicitng message category by adding a count vectorizer, followed by a tfidf transformer, and a multi-output classifier using SGD algorithm
+    Args:
+        None
+    Returns:
+        Pipeline (sklearn.pipeline) - The pipeline to be used to fit the model to the processed data
+    '''
+    
+    # Model parameters were based on the grid search conducted in the Model Development notebook
     pipeline = Pipeline([
         ('vect', CountVectorizer(tokenizer=tokenize, ngram_range=(1,1))),
         ('tfidf', TfidfTransformer()),
@@ -67,7 +96,17 @@ def build_model():
 
 
 def evaluate_model(model, X_test, Y_test, category_names):
-        
+    '''
+    Evaluate the resultant model's accuracy across all category names
+    Args:
+        model (sklearn.pipeline) - Trained model to be evaluated against test dataset
+        X_test (pd.Series) - Test dataset for model features
+        Y_test (pd.DataFrame) - Test dataset for corresponding labels
+        category_names (pd.Index) - Category names for labels found in dataset
+    Returns:
+        None
+    '''
+    
     Y_pred = model.predict(X_test)
         
     accuracy = (Y_pred == Y_test).mean()
@@ -77,11 +116,29 @@ def evaluate_model(model, X_test, Y_test, category_names):
 
 
 def save_model(model, model_filepath):
+    '''
+    Save trained model to the specified file path
+    Args:
+        model (sklearn.pipeline) - Trained model to be saved
+        model_filepath (str) - Location for trained model to be saved using pickle
+    Returns:
+        None
+    '''
+    
     with open(model_filepath, 'wb') as f:
         pickle.dump( model, f)
 
 
 def main():
+    '''
+    Run, evaluate, and save the model
+    Args:
+        database_filepath (str) - The path to the local database
+        model_filepath (str) - Location for trained model to be saved using pickle
+    Returns:
+        None
+    '''
+    
     if len(sys.argv) == 3:
         database_filepath, model_filepath = sys.argv[1:]
         print('Loading data...\n    DATABASE: {}'.format(database_filepath))
@@ -106,7 +163,7 @@ def main():
         print('Please provide the filepath of the disaster messages database '\
               'as the first argument and the filepath of the pickle file to '\
               'save the model to as the second argument. \n\nExample: python '\
-              'train_classifier.py ../data/DisasterResponse.db classifier.pkl')
+              'train_classifier.py ../data/datasets.db classifier.pkl')
 
 
 if __name__ == '__main__':
