@@ -39,7 +39,7 @@ This project includes a web app where an emergency worker can input a new messag
 │       ├── go.html                         -- Web page of app html
 │       └── master.html                     -- Homepage of app html
 ├── data                                -- Input data and processed data
-│   ├── datasets.db                     -- Preprocessed data
+│   ├── datasets.db                         -- Preprocessed data
 │   ├── disaster_categories.csv             -- Input data
 │   ├── disaster_messages.csv               -- Input data
 │   └── process_data.py                     -- Script to run data preprocessing
